@@ -1,0 +1,11 @@
+{% extends 'polls/polls_list.html' %}
+
+{% block title %}
+{{ polls_type.type_name }}
+{% endblock %}
+
+{% block polls_list_title %}
+日期归档： {{ polls_with_date }}
+<a href="{% url 'polls_list' %}"></a>
+{% endblock %}
+

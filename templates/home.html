@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% block title %}
+    我的网站
+{% endblock %}
+
+{% block header_extends %}
+    <script src="http://cdn.hcharts.cn/highcharts/highcharts.js"></script>
+{% endblock %}
+
+{% block nav_home_active %}disactive{% endblock %}     <!-- ？ 激活不激活 -->
+
+{% block content %} 
+    <div style="text-align:center">
+        <p> wecome ！！！！</p>
+        <!-- 图表容器 DOM -->
+        <div id="container" style="width: 600px;height:400px;margin: auto"></div>
+        <!-- 引入 highcharts.js -->
+        <script src="http://cdn.hcharts.cn/highcharts/highcharts.js"></script>
+        <script>
+            // 图表配置
+            var options = {
+                chart: {type: 'line'},
+                title: {text: null},
+                xAxis: {
+                    categories: {{ dates|safe }},   // x 轴分类
+                    tickmarkplacement: 'on',
+                },
+                yAxis: {
+                    title: { text: null },
+                    labels: { enabled: false },
+                    gridLineDashStyle: 'Dash',
+                },
+                series: [{                              // 数据列
+                    name: '阅读量',                        // 数据列名
+                    data: {{ read_nums }}                 // 数据
+                }],
+                plotOptions: {
+                    line: {
+                        dataLabels: {
+                            enabled: true
+                        }
+                    }
+                },                            
+
+                credits:{ enabled: false },
+            };
+            // 图表初始化函数
+            var chart = Highcharts.chart('container', options);
+
+        </script>
+        <div>
+            <!-- 今天24小时热门内容 -->
+            <h3>今天热门点击</h3>
+            <ul>
+                {% for hot_data in today_hot_data %}
+                    <li><a href="{% url 'polls_detail' hot_data.content_object.id %}"> {{ hot_data.content_object.title }}</a>({{ hot_data.read_num }})</li>
+                    
+                {% empty %}
+                    <li>今天暂时没有</li>
+                {% endfor %}
+            </ul>
+            <!-- 昨天热门内容 -->
+            <h3>昨天热门点击</h3>
+            <ul>
+                {% for hot_data in yesterday_hot_data %}
+                    <li><a href="{% url 'polls_detail' hot_data.content_object.id %}"> {{ hot_data.content_object.title }}</a>({{ hot_data.read_num }})</li>              
+                {% empty %}
+                    <li>昨天暂时没有</li>
+                {% endfor %}
+            </ul>
+            <!-- 本周热门内容 -->
+            <h3>本周热门点击</h3>
+            <ul>
+                {% for hot_polls in seven_day_hot_data %}
+                    <li><a href="{% url 'polls_detail' hot_polls.id %}">{{ hot_polls.title }}</a>({{ hot_polls.read_num_sum }})</li>              
+                {% empty %}
+                    <li>本周暂时没有</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+{% endblock %}
+
+
+   
+    

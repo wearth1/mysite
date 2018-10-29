@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block title %}{{ page_title }}{% endblock %}
+{% block nav_home_active %}active{% endblock %}     
+{% block content %} 
+<div class="login">
+        <div class="login-1"></div>
+        <div class="login-2">       
+            <form action="#" method="POST" class="logg">
+
+                    <div class="log">
+                    <div class="log-1" style="background: #f6f4f5;width: 100%;border-radius: 5px 5px 0px 0px;">{{ form_title }}</div>
+                    {% csrf_token %}                   
+                    {% for field in form %}
+                    {% if not field.is_hidden %}
+                            <label for="{{ field.id_for_lable }}">{{ field.label }}</label>
+                        {% endif %}
+                        {{ field }}
+                        <div class="bt-span"><span class="text-danger" style="margin-top:none;">{{ field.errors.as_text }}</span></div>
+                    {% endfor%}
+                        <div class="bt-span"><span class="text-danger" id="tip" style="margin-top:none;">{{ form.non_field_errors }}</span></div>
+           
+                    <div class="bt-form-right">
+                        {% block other_buttons %}{% endblock %}
+                        <input class="bt_change" type="submit" value="{{ submit_text }}">      
+                        <button class="bt_back" onclick="window.location.href='{{ return_back_url }}'">返回</button>  
+                    </div>           
+                    </div>
+  
+            </form>   
+        </div>
+        <div class="login-3"></div>
+    </div> 
+{% endblock %}

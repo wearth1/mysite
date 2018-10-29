@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% block title %} 我的网站|注册{% endblock %}
+{% block nav_home_active %}active{% endblock %}     <!-- ？ 激活不激活 -->
+{% block content %} 
+<div class="login">
+        <div class="login-1"></div>
+        <div class="login-2">       
+            <form action="#" method="POST" class="logg">
+                    {% if not user.is_authenticated %}
+                    <div class="log">
+                    <div class="log-1">注册</div>
+                    {% csrf_token %}
+                    {% for field in reg_form %}
+                    {{ field }}<span class="text-danger">{{ field.errors.as_text }}</span>{% endfor %}
+                    <span class="text-danger">{{ reg_form.non_field_errors }}</span>
+                    <button id="send_code" class="bt_send">发送验证码</button>
+                    <input class="submit" type="submit" value="注册">                    
+                    </div>
+
+                    {% else %}
+                    <span>未登录，跳转到首页...</span>
+                    <script type="text/javascript">
+                        window.location.href = '/';
+                    </script>     
+                    <!-- 可以设置 等待1秒 -->
+                    {% endif %}   
+            </form>   
+        </div>
+        <div class="login-3"></div>
+    </div>   
+{% endblock %}
+
+{% block script_extends %}
+    <script type="text/javascript">
+        $("#send_code").click(function(){
+            var email = $("#id_email").val();
+            if(email==""){
+                $("#tip").text('* 邮箱不能为空');
+                return false;
+            }
+            // 发送验证码
+            $.ajax({
+                url: "{% url 'send_verification_code' %}",
+                type: "GET",
+                data: {
+                    'email': email,
+                    'send_for': 'register_email_code'
+                },
+                cache: false,
+                success: function(data){
+                    if(data['status']=='ERROR'){
+                        alert(data['status']);    
+                    }                    
+                }
+            });
+            // 把按钮变灰
+            $(this).addClass('disabled');
+            $(this).attr('disabled', true);
+            var time = 30;
+            $(this).text(time + 's');
+            var interval = setInterval(() => {
+                if(time <= 0){
+                    clearInterval(interval);
+                    $(this).removeClass('disabled');
+                    $(this).attr('disabled', false);
+                    $(this).text('发送验证码');
+                    return false;
+                }
+                time --;
+                $(this).text(time + 's');
+            }, 1000);
+        });
+    </script>
+{% endblock %}

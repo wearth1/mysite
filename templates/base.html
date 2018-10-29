@@ -1,0 +1,124 @@
+ {% load staticfiles %}<!--link 方案二 -->                                             
+<!DOCTYPE html>
+<html lang="en"></html>
+<head>
+    <meta charset="UTF-8">
+    <!-- <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1"> -->
+    <title>{% block title %}{% endblock %}</title>
+    <link rel="stylesheet"  href="{% static 'css/base.css' %}">     <!--link 方案二 -->
+    <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="http://libs.baidu.com/jquery/2.1.4/jquery.min.js"></script>
+    <script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    {% block polls_list %}{% endblock %}
+    {% block polls_datail %}{% endblock %}
+    {% block polls_icon %}{% endblock %}
+    {% block login %}{% endblock %}
+     
+</head>
+<body>
+    <div class="navgaite">
+        <ul class="db">
+            <li class="db-2"><a href="{% url 'home' %}">汉海科技</a>
+                <ul class="show">
+                <li>a</li>
+                <li>b</li>
+                <li>c</li>
+                <li>d</li>
+                </ul>
+            </li>
+            <li class="db-2"  class="{% block nav_home_active %}{% endblock %}"><a href="{% url 'home' %}">首页</a>
+            <ul class="show">
+                <li><a href="">健康</a></li>
+                <li><a href="">设计</a></li>
+                <li><a href="">电影</a></li>
+                <li>d</li>
+                </ul>
+            </li>
+            <li class="db-2"><a href="{% url 'polls_list' %}">头条</a>
+                <ul class="show">
+                <li>a</li>
+                <li>b</li>
+                <li>c</li>
+                <li>d</li>
+                </ul>
+            </li>
+            <li class="db-2"><a href="{% url 'polls_list' %}">发布</a></li>
+            {% if not user.is_authenticated %}
+            <li class="db-2"><a href="{% url 'polls_list' %}">登录</a>
+                <ul class="show">
+                <li><a href="{% url 'login' %}?from={{ request.get_full_path }}">登录</a></li>
+                <li><a href="{% url 'register' %}?from={{ request.get_full_path }}">注册</a></li>
+                </ul>
+                {% else %}    
+                <li class="db-2"><a href="{% url 'polls_list' %}">
+                    {% if user.has_nickname %}
+                        {{user.username }}({{ user.get_nickname }})</a>
+                    {% else %}
+                        {{user.username }}
+                    {% endif %}
+                <ul class="show">
+                <li><a href="{% url 'user_info' %}">个人中心</a></li>
+                <li><a href="{% url 'change_password' %}">修改密码</a></li>
+                {% if user.is_staff or user.is_superuser %}
+                    <li><a href="{% url 'admin:index' %}">后台管理</a></li>
+                {% endif %}
+                <li><a href="{% url 'logout' %}?from={{ request.get_full_path }}">退出</a></li>
+                </ul>
+                {% endif %}
+            </li>      
+    </div> 
+    <div class="content">
+    {% block content %}{% endblock %}  
+    <!-- Modal -->
+    <div class="modal fade" id="login_medal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+            <div class="modal-dialog modal-sm"  role="document">
+            <div class="modal-content">
+                <form id="login_medal_form" action="" method="POST">        
+                    <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">Modal title</h4>
+                    </div>
+                    <div class="modal-body">                            
+                        {% csrf_token %}
+                        {% for field in login_medal_form %}
+                            {{ field }}
+                        {% endfor %}
+                        <span id="login_medal_tip" class="text-danger"></span>    
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">保存</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    </div>
+                </div>
+                </div>
+            </div>
+        </form>   
+    <!-- Modal -->
+    <script type="text/javascript">
+    $("#login_medal_form").submit(function(event){
+            event.preventDefault();
+            $.ajax({
+                url: '{% url "login_for_medal" %}',
+                type: 'POST',
+                data: $(this).serialize(),
+                cache: false,
+                success: function(data){
+                    if(data['status']=='SUCCESS'){
+                        window.location.reload();
+                    }else{
+                        $('#login_medal_tip').text('用户名或密码不正确');
+                    }
+                }
+            });
+        });
+    </script>
+    {% block script_extends %}{% endblock %} 
+    </div> 
+    <div class="foot">
+
+    </div>
+    
+</body>
+
+</html>

@@ -1,0 +1,125 @@
+{% extends 'base.html' %}
+{% load staticfiles %}  
+{% load comment_tags %}
+{% load likes_tags %} 
+
+{% block title %}
+    home 网站
+{% endblock %}
+
+{% block polls_icon %}
+<link rel="stylesheet"  href="{% static 'css/icon.css' %}"> 
+{% endblock %}
+{% block polls_list %}
+<link rel="stylesheet"  href="{% static 'css/list.css' %}"> 
+{% endblock %}
+
+   
+{% block content %}          
+<div >
+        <div class="da">
+            <div class="da-1">
+
+            </div>
+            <div class="da-2">
+                <div class="da-A" >
+                    <h4 class="">{% block polls_list_title %}头条列表{% endblock %}</h4> 
+                    {% for polls in pollss %}
+                    <div class="da-B">
+                        <a href="{% url 'polls_detail' polls.id %}"> 
+                        <h2 class="da-a">{{ polls.title }}</h2>
+                        <P>        
+                            {{ polls.created_time|date:"Y-m-d" }}
+                            阅读({{ polls.get_read_num }})
+                            评论({% get_comment_count polls %})
+                            喜欢({% get_like_count polls %})
+                        </P>
+                        </a>
+                        <p class="da-b">{{ polls.content|striptags|truncatechars:300 }}</p>
+                    </div>
+                    {% empty %}
+                    <p>—— 暂无内容 ——</p>
+                    {% endfor %}
+                    <p>一共有{{ page_of_polls.paginator.count }}篇推送
+                    <!-- 当前第{{ page_of_polls.number }}页
+                    共{{ page_of_polls.paginator.num_pages }}页 -->
+                    </p>
+                </div>
+                <div class="paginator">             
+                        <ul class="icon">
+                        {% if page_of_polls.has_previous %}
+                        <li>
+                            <a href="?page={{ page_of_polls.previous_page_number }}">
+                            <span class="iconfont icon-left"></span>
+                            </a></li>                            
+                        {% else %}
+                        <span class="iconfont icon-left"></span>
+                        {% endif %}
+                                               
+
+                        {% for page_num in page_range %}
+                        {% if page_num == page_of_polls.number %}
+                            <li >
+                            <a><span id="active" class="icon-number">{{ page_num }}</span>
+                            </a></li >
+                        {% else %}
+                            {% if page_num == '...' %}
+                                <li><span class="icon-number">{{ page_num }}</span></li>
+                            {% else %}
+                                <li>
+                                <a href="?page={{ page_num }}"><span class="icon-number">{{ page_num }}</span>
+                                </a></li >
+                            {% endif %}
+                           
+                        {% endif %}
+                        
+                        {% endfor %}
+
+                        {% if page_of_polls.has_next %}
+                            <li>
+                            <a href="?page={{ page_of_polls.next_page_number }}">
+                            <span class="iconfont icon-right"></span>
+                            </a></li>                            
+                        {% else %}
+                        <span class="iconfont icon-right"></span>
+                        {% endif %}
+                        </ul>
+                    </div>
+            </div>   
+            
+            <div  class="da-3"> 
+                <h4 class="dc-a">头条分类</h4>
+                <ul class="dc-b">
+                {% for polls_type in polls_types %}                       
+                <li ><a href="{% url 'polls_with_type' polls_type.id %}">
+                    {{ polls_type.type_name }} ({{ polls_type.polls_count }})
+                    </a>
+                </li>
+                {% empty %}
+                <li>暂无分类</li>
+                {% endfor %}
+                </ul>
+                <div> 
+                    <h4 class="dc-a" >日期归档</h4>
+                    <ul class="dc-b">
+                    {% for polls_date, polls_count in poll_dates.items %}                       
+                    <li ><a href="{% url 'polls_with_date' polls_date.year polls_date.month %}">
+                        {{ polls_date|date:"Y年m月"}}({{ polls_count }})
+                        </a>
+                    </li>
+                    {% empty %}
+                    <li>暂无分类</li>
+                    {% endfor %}
+                </div>
+            </div> 
+            <div class="da-4">
+            
+            </div> 
+        </div>
+    </div>
+
+{% endblock %}  
+
+
+    
+    
